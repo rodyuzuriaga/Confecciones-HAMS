@@ -14,20 +14,7 @@ export const metadata: Metadata = {
     "Plataforma de automatización del control de calidad con IA para la producción de jeans en Confecciones HAM'S",
   generator: "v0.app",
   icons: {
-    icon: [
-      {
-        url: "/icon-light-32x32.png",
-        media: "(prefers-color-scheme: light)",
-      },
-      {
-        url: "/icon-dark-32x32.png",
-        media: "(prefers-color-scheme: dark)",
-      },
-      {
-        url: "/icon.svg",
-        type: "image/svg+xml",
-      },
-    ],
+    icon: "/h-logo.svg",
     apple: "/apple-icon.png",
   },
 }
