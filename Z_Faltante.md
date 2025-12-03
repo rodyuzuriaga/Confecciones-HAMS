@@ -56,12 +56,6 @@ Basándome en el análisis de tu proyecto actual y los requerimientos de la tare
 ### 7. **📊 Reportería**
 - Selector de fecha inicial y final
 - Reportes por rango de fechas:
-  - Ventas por día/mes
-  - Ventas por producto
-  - Ventas por vendedor
-  - Producto más vendido
-  - Mejor cliente
-  - Mejor vendedor
 - **Botón de exportar a PDF/Excel**
 
 ### 8. **🗄️ Base de Datos**
@@ -76,10 +70,6 @@ Basándome en el análisis de tu proyecto actual y los requerimientos de la tare
 |---|--------|-----------|-------------|
 | 1 | Login con bloqueo 3 intentos | 🔴 Alta | Media |
 | 2 | Gestión de Usuarios | 🔴 Alta | Alta |
-| 3 | Gestión de Clientes | 🔴 Alta | Media |
-| 4 | Gestión de Proveedores | 🟡 Media | Media |
-| 5 | Gestión de Productos/Mercadería | 🔴 Alta | Media |
-| 6 | Módulo de Ventas completo | 🔴 Alta | Alta |
 | 7 | Reportería con filtros de fecha | 🔴 Alta | Alta |
 | 8 | Exportar PDF/Excel | 🟡 Media | Media |
 | 9 | Base de datos (Prisma/PostgreSQL) | 🔴 Alta | Media |

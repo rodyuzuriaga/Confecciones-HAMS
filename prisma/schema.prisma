@@ -79,7 +79,6 @@ model Usuario {
   rol              Rol      @relation(fields: [idRol], references: [idRol])
   permiso          Permiso  @relation(fields: [idPermiso], references: [idPermiso])
   datosPersonales  DatosPersonales?
-  ventas           Venta[]
 }
 
 model DatosPersonales {
@@ -125,81 +124,4 @@ model Direccion {
   referencia      String?
   datosPersonales DatosPersonales @relation(fields: [idDatosPersonales], references: [idDatosPersonales])
   distrito        Distrito @relation(fields: [idDistrito], references: [idDistrito])
-}
-
-// Gestión de Clientes
-model Cliente {
-  idCliente        Int      @id @default(autoincrement())
-  nombres          String
-  apellidos        String
-  dni              String    @unique
-  ruc              String?   @unique
-  fechaRegistro    DateTime @default(now())
-  activo           Boolean  @default(true)
-  ventas           Venta[]
-}
-
-// Gestión de Proveedores
-model Proveedor {
-  idProveedor      Int      @id @default(autoincrement())
-  nombreEmpresa    String
-  ruc              String    @unique
-  contacto         String?
-  telefono         String?
-  email            String?
-  fechaRegistro    DateTime @default(now())
-  activo           Boolean  @default(true)
-  productos        Producto[]
-}
-
-// Gestión de Productos/Mercadería
-model CategoriaProducto {
-  idCategoria      Int      @id @default(autoincrement())
-  nombreCategoria  String   @unique
-  descripcion      String?
-  productos        Producto[]
-}
-
-model Producto {
-  idProducto       Int      @id @default(autoincrement())
-  nombreProducto   String
-  descripcion      String?
-  precioCompra     Float
-  precioVenta      Float
-  stock            Int      @default(0)
-  stockMinimo      Int      @default(5)
-  idCategoria     Int
-  idProveedor     Int
-  activo           Boolean  @default(true)
-  fechaRegistro    DateTime @default(now())
-  categoria        CategoriaProducto @relation(fields: [idCategoria], references: [idCategoria])
-  proveedor        Proveedor @relation(fields: [idProveedor], references: [idProveedor])
-  detalleVentas    DetalleVenta[]
-}
-
-// Módulo de Ventas
-model Venta {
-  idVenta          Int      @id @default(autoincrement())
-  fechaVenta       DateTime @default(now())
-  idUsuario       Int
-  idCliente       Int?
-  subtotal         Float
-  igv              Float
-  total            Float
-  totalLetras      String
-  estado           String   @default("completada") // completada, anulada
-  usuario          Usuario  @relation(fields: [idUsuario], references: [idUsuario])
-  cliente          Cliente? @relation(fields: [idCliente], references: [idCliente])
-  detalles         DetalleVenta[]
-}
-
-model DetalleVenta {
-  idDetalleVenta   Int     @id @default(autoincrement())
-  idVenta         Int
-  idProducto      Int
-  cantidad        Int
-  precioUnitario  Float
-  subtotal        Float
-  venta           Venta    @relation(fields: [idVenta], references: [idVenta])
-  producto        Producto @relation(fields: [idProducto], references: [idProducto])
 }
