@@ -1,0 +1,205 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url = env("DATABASE_URL")
+}
+
+model Pais {
+  idPais    Int    @id @default(autoincrement())
+  nombrePais String @unique
+  departamentos Departamento[]
+}
+
+model Departamento {
+  idDepartamento   Int    @id @default(autoincrement())
+  nombreDepartamento String
+  idPais          Int
+  pais            Pais   @relation(fields: [idPais], references: [idPais])
+  provincias      Provincia[]
+}
+
+model Provincia {
+  idProvincia   Int    @id @default(autoincrement())
+  nombreProvincia String
+  idDepartamento Int
+  departamento  Departamento @relation(fields: [idDepartamento], references: [idDepartamento])
+  distritos     Distrito[]
+}
+
+model Distrito {
+  idDistrito   Int    @id @default(autoincrement())
+  nombreDistrito String
+  idProvincia Int
+  provincia   Provincia @relation(fields: [idProvincia], references: [idProvincia])
+  direcciones Direccion[]
+}
+
+model Sexo {
+  idSexo    Int    @id @default(autoincrement())
+  descripcion String @unique
+  datosPersonales DatosPersonales[]
+}
+
+model EstadoCivil {
+  idEstadoCivil Int    @id @default(autoincrement())
+  descripcion   String @unique
+  datosPersonales DatosPersonales[]
+}
+
+model Rol {
+  idRol       Int    @id @default(autoincrement())
+  nombreRol   String @unique
+  descripcion String?
+  usuarios    Usuario[]
+}
+
+model Permiso {
+  idPermiso     Int    @id @default(autoincrement())
+  nombrePermiso String @unique
+  descripcion   String?
+  usuarios      Usuario[]
+}
+
+model Usuario {
+  idUsuario         Int      @id @default(autoincrement())
+  nombreUsuario     String   @unique
+  contrasena        String
+  idRol            Int
+  idPermiso        Int
+  ultimoAcceso     DateTime?
+  intentosFallidos Int      @default(0)
+  bloqueado        Boolean  @default(false)
+  tokenRecuperacion String?
+  rol              Rol      @relation(fields: [idRol], references: [idRol])
+  permiso          Permiso  @relation(fields: [idPermiso], references: [idPermiso])
+  datosPersonales  DatosPersonales?
+  ventas           Venta[]
+}
+
+model DatosPersonales {
+  idDatosPersonales Int      @id @default(autoincrement())
+  idUsuario        Int      @unique
+  nombres          String
+  apellidos        String
+  dni              String    @unique
+  idSexo          Int
+  idEstadoCivil    Int
+  usuario          Usuario   @relation(fields: [idUsuario], references: [idUsuario])
+  sexo             Sexo      @relation(fields: [idSexo], references: [idSexo])
+  estadoCivil      EstadoCivil @relation(fields: [idEstadoCivil], references: [idEstadoCivil])
+  correos          CorreoElectronico[]
+  telefonos        Telefono[]
+  direcciones      Direccion[]
+}
+
+model CorreoElectronico {
+  idCorreo         Int    @id @default(autoincrement())
+  idDatosPersonales Int
+  correoElectronico String
+  tipoCorreo       String @default("personal")
+  datosPersonales  DatosPersonales @relation(fields: [idDatosPersonales], references: [idDatosPersonales])
+}
+
+model Telefono {
+  idTelefono       Int    @id @default(autoincrement())
+  idDatosPersonales Int
+  numeroTelefono   String
+  tipoTelefono     String @default("movil")
+  datosPersonales  DatosPersonales @relation(fields: [idDatosPersonales], references: [idDatosPersonales])
+}
+
+model Direccion {
+  idDireccion      Int    @id @default(autoincrement())
+  idDatosPersonales Int
+  idDistrito      Int
+  calleAvenida    String
+  tipoDireccion   String @default("domicilio")
+  piso            String?
+  numero          String
+  referencia      String?
+  datosPersonales DatosPersonales @relation(fields: [idDatosPersonales], references: [idDatosPersonales])
+  distrito        Distrito @relation(fields: [idDistrito], references: [idDistrito])
+}
+
+// Gestión de Clientes
+model Cliente {
+  idCliente        Int      @id @default(autoincrement())
+  nombres          String
+  apellidos        String
+  dni              String    @unique
+  ruc              String?   @unique
+  fechaRegistro    DateTime @default(now())
+  activo           Boolean  @default(true)
+  ventas           Venta[]
+}
+
+// Gestión de Proveedores
+model Proveedor {
+  idProveedor      Int      @id @default(autoincrement())
+  nombreEmpresa    String
+  ruc              String    @unique
+  contacto         String?
+  telefono         String?
+  email            String?
+  fechaRegistro    DateTime @default(now())
+  activo           Boolean  @default(true)
+  productos        Producto[]
+}
+
+// Gestión de Productos/Mercadería
+model CategoriaProducto {
+  idCategoria      Int      @id @default(autoincrement())
+  nombreCategoria  String   @unique
+  descripcion      String?
+  productos        Producto[]
+}
+
+model Producto {
+  idProducto       Int      @id @default(autoincrement())
+  nombreProducto   String
+  descripcion      String?
+  precioCompra     Float
+  precioVenta      Float
+  stock            Int      @default(0)
+  stockMinimo      Int      @default(5)
+  idCategoria     Int
+  idProveedor     Int
+  activo           Boolean  @default(true)
+  fechaRegistro    DateTime @default(now())
+  categoria        CategoriaProducto @relation(fields: [idCategoria], references: [idCategoria])
+  proveedor        Proveedor @relation(fields: [idProveedor], references: [idProveedor])
+  detalleVentas    DetalleVenta[]
+}
+
+// Módulo de Ventas
+model Venta {
+  idVenta          Int      @id @default(autoincrement())
+  fechaVenta       DateTime @default(now())
+  idUsuario       Int
+  idCliente       Int?
+  subtotal         Float
+  igv              Float
+  total            Float
+  totalLetras      String
+  estado           String   @default("completada") // completada, anulada
+  usuario          Usuario  @relation(fields: [idUsuario], references: [idUsuario])
+  cliente          Cliente? @relation(fields: [idCliente], references: [idCliente])
+  detalles         DetalleVenta[]
+}
+
+model DetalleVenta {
+  idDetalleVenta   Int     @id @default(autoincrement())
+  idVenta         Int
+  idProducto      Int
+  cantidad        Int
+  precioUnitario  Float
+  subtotal        Float
+  venta           Venta    @relation(fields: [idVenta], references: [idVenta])
+  producto        Producto @relation(fields: [idProducto], references: [idProducto])
+}
