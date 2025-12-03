@@ -177,7 +177,7 @@ export function InspectionView({
           </div>
 
           {/* Mode Toggle */}
-          <div className="flex items-center bg-muted rounded-lg p-1">
+          <div className="flex items-center bg-muted rounded-lg p-1.5 gap-1">
             <Button
               variant={mode === "upload" ? "default" : "ghost"}
               size="sm"
@@ -275,13 +275,13 @@ export function InspectionView({
                     <FileImage className="w-10 h-10 text-primary" />
                   </div>
 
-                  <h3 className="text-lg font-semibold text-foreground mb-2">Arrastra una imagen de pantalón aquí</h3>
-                  <p className="text-sm text-muted-foreground mb-4">o haz clic para seleccionar un archivo</p>
+                  <h3 className="text-lg font-semibold text-slate-700 mb-2">Arrastra una imagen de pantalón aquí</h3>
+                  <p className="text-sm text-slate-600 mb-4">o haz clic para seleccionar un archivo</p>
 
                   <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                    <Badge variant="outline" className="text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-600">JPG</Badge>
-                    <Badge variant="outline" className="text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-600">PNG</Badge>
-                    <Badge variant="outline" className="text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-600">WEBP</Badge>
+                    <Badge variant="outline" className="text-slate-700 border-slate-300">JPG</Badge>
+                    <Badge variant="outline" className="text-slate-700 border-slate-300">PNG</Badge>
+                    <Badge variant="outline" className="text-slate-700 border-slate-300">WEBP</Badge>
                   </div>
                 </div>
               ) : (
@@ -295,15 +295,15 @@ export function InspectionView({
                       className="w-full h-full object-contain bg-slate-900"
                     />
 
-                    {/* Grid Overlay cuando está analizando */}
-                    {isAnalyzing && (
-                      <div className="absolute inset-0 pointer-events-none">
-                        <div className="absolute left-1/4 top-0 bottom-0 w-px bg-cyan-500/30" />
-                        <div className="absolute left-1/2 top-0 bottom-0 w-px bg-cyan-500/40" />
-                        <div className="absolute left-3/4 top-0 bottom-0 w-px bg-cyan-500/30" />
-                        <div className="absolute top-1/4 left-0 right-0 h-px bg-cyan-500/30" />
-                        <div className="absolute top-1/2 left-0 right-0 h-px bg-cyan-500/40" />
-                        <div className="absolute top-3/4 left-0 right-0 h-px bg-cyan-500/30" />
+                    {/* Grid Overlay cuando está analizando - removido por solicitud del usuario */}
+                    {false && isAnalyzing && (
+                      <div className="absolute inset-0 pointer-events-none z-0">
+                        <div className="absolute left-1/4 top-0 bottom-0 w-px bg-cyan-500/20" />
+                        <div className="absolute left-1/2 top-0 bottom-0 w-px bg-cyan-500/25" />
+                        <div className="absolute left-3/4 top-0 bottom-0 w-px bg-cyan-500/20" />
+                        <div className="absolute top-1/4 left-0 right-0 h-px bg-cyan-500/20" />
+                        <div className="absolute top-1/2 left-0 right-0 h-px bg-cyan-500/25" />
+                        <div className="absolute top-3/4 left-0 right-0 h-px bg-cyan-500/20" />
                         <div className="absolute left-0 right-0 h-1 bg-gradient-to-r from-transparent via-cyan-400 to-transparent animate-scan-line shadow-[0_0_20px_rgba(34,211,238,0.8)]" />
                       </div>
                     )}
@@ -312,7 +312,7 @@ export function InspectionView({
                     <Button
                       variant="secondary"
                       size="icon"
-                      className="absolute top-4 right-4 h-10 w-10 rounded-full bg-black/50 hover:bg-black/70 text-white"
+                      className="absolute top-4 right-4 h-10 w-10 rounded-full bg-black/50 hover:bg-black/70 text-white z-10"
                       onClick={clearImage}
                     >
                       <X className="w-5 h-5" />
@@ -320,7 +320,7 @@ export function InspectionView({
 
                     {/* Analyze Button */}
                     {!isAnalyzing && !analysisResult && (
-                      <div className="absolute bottom-4 left-1/2 -translate-x-1/2">
+                      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-10">
                         <Button
                           size="lg"
                           className="bg-primary hover:bg-primary/90 text-white shadow-lg px-8"
@@ -334,7 +334,7 @@ export function InspectionView({
 
                     {/* Analysis Overlay */}
                     {isAnalyzing && (
-                      <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+                      <div className="absolute inset-0 bg-black/40 flex items-center justify-center z-20">
                         <div className="bg-white rounded-2xl p-8 shadow-2xl flex flex-col items-center">
                           <Loader2 className="w-12 h-12 text-primary animate-spin mb-4" />
                           <h3 className="text-lg font-bold text-foreground mb-2">Analizando imagen...</h3>
@@ -344,127 +344,13 @@ export function InspectionView({
                     )}
 
                     {/* Corner Info */}
-                    <div className="absolute bottom-4 left-4">
+                    <div className="absolute bottom-4 left-4 z-10">
                       <Badge className="bg-black/70 text-white border-0 font-mono text-xs">
                         {mounted ? currentTime.toLocaleTimeString("es-ES") : "--:--:--"}
                       </Badge>
                     </div>
                   </div>
 
-                  {/* Results Panel */}
-                  {analysisResult && (
-                    <div className="w-96 bg-white border-l border-border overflow-y-auto">
-                      <div className="p-4 border-b border-border sticky top-0 bg-white z-10">
-                        <div className="flex items-center justify-between mb-3">
-                          <h3 className="font-bold text-foreground">Resultado del Análisis</h3>
-                          <Badge className={getRecommendationColor(analysisResult.overall_recommendation)}>
-                            {analysisResult.overall_recommendation}
-                          </Badge>
-                        </div>
-
-                        {/* Quality Score */}
-                        <div className="flex items-center gap-3 mb-3">
-                          <div className="flex-1">
-                            <div className="flex justify-between text-xs mb-1">
-                              <span className="text-muted-foreground">Puntuación de Calidad</span>
-                              <span className="font-bold">{analysisResult.quality_score}%</span>
-                            </div>
-                            <div className="h-2 bg-slate-200 rounded-full overflow-hidden">
-                              <div
-                                className={cn(
-                                  "h-full rounded-full transition-all",
-                                  analysisResult.quality_score >= 80
-                                    ? "bg-emerald-500"
-                                    : analysisResult.quality_score >= 50
-                                      ? "bg-amber-500"
-                                      : "bg-red-500",
-                                )}
-                                style={{ width: `${analysisResult.quality_score}%` }}
-                              />
-                            </div>
-                          </div>
-                        </div>
-
-                        <p className="text-sm text-muted-foreground">{analysisResult.summary}</p>
-                      </div>
-
-                      {/* Defects List */}
-                      {analysisResult.defects && analysisResult.defects.length > 0 ? (
-                        <div className="p-4">
-                          <h4 className="text-sm font-bold text-foreground mb-3 flex items-center gap-2">
-                            <AlertTriangle className="w-4 h-4 text-amber-500" />
-                            Defectos Encontrados ({analysisResult.total_defects})
-                          </h4>
-
-                          <div className="space-y-3">
-                            {analysisResult.defects.map((defect, index) => (
-                              <div
-                                key={defect.id || index}
-                                className="bg-slate-50 rounded-lg p-3 border border-slate-200"
-                              >
-                                <div className="flex items-start justify-between mb-2">
-                                  <div className="flex items-center gap-2">
-                                    <Badge className={cn("text-xs", getSeverityColor(defect.severity))}>
-                                      {defect.severity === "critical"
-                                        ? "Crítico"
-                                        : defect.severity === "major"
-                                          ? "Mayor"
-                                          : "Menor"}
-                                    </Badge>
-                                    <span className="font-medium text-sm text-foreground">{defect.type}</span>
-                                  </div>
-                                  <span className="text-xs font-mono text-muted-foreground">{defect.confidence}%</span>
-                                </div>
-
-                                <p className="text-xs text-muted-foreground mb-2">{defect.description}</p>
-
-                                <div className="flex items-center justify-between text-xs">
-                                  <span className="text-slate-500">
-                                    <strong>Ubicación:</strong> {defect.location}
-                                  </span>
-                                  <Badge variant="outline" className="text-[10px]">
-                                    {defect.recommendation}
-                                  </Badge>
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                      ) : (
-                        analysisResult.status === "approved" && (
-                          <div className="p-8 text-center">
-                            <div className="w-16 h-16 rounded-full bg-emerald-100 flex items-center justify-center mx-auto mb-4">
-                              <CheckCircle2 className="w-8 h-8 text-emerald-600" />
-                            </div>
-                            <h4 className="font-bold text-foreground mb-2">Prenda Aprobada</h4>
-                            <p className="text-sm text-muted-foreground">No se detectaron defectos significativos</p>
-                          </div>
-                        )
-                      )}
-
-                      {/* Notes */}
-                      {analysisResult.notes && (
-                        <div className="p-4 border-t border-border">
-                          <h4 className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2">
-                            Notas del Inspector IA
-                          </h4>
-                          <p className="text-sm text-foreground">{analysisResult.notes}</p>
-                        </div>
-                      )}
-
-                      {/* Action Buttons */}
-                      <div className="p-4 border-t border-border sticky bottom-0 bg-white">
-                        <div className="flex gap-2">
-                          <Button variant="outline" className="flex-1 bg-transparent" onClick={clearImage}>
-                            Nueva Inspección
-                          </Button>
-                          <Button variant="default" className="flex-1" onClick={analyzeImage}>
-                            Re-analizar
-                          </Button>
-                        </div>
-                      </div>
-                    </div>
-                  )}
                 </div>
               )}
             </>
@@ -480,15 +366,17 @@ export function InspectionView({
                 <p className="text-amber-400 text-xs mt-4">Modo cámara en vivo - requiere conexión de hardware</p>
               </div>
 
-              {/* Grid Overlay for camera mode */}
-              <div className="absolute inset-0 pointer-events-none">
-                <div className="absolute left-1/4 top-0 bottom-0 w-px bg-cyan-500/20" />
-                <div className="absolute left-1/2 top-0 bottom-0 w-px bg-cyan-500/30" />
-                <div className="absolute left-3/4 top-0 bottom-0 w-px bg-cyan-500/20" />
-                <div className="absolute top-1/4 left-0 right-0 h-px bg-cyan-500/20" />
-                <div className="absolute top-1/2 left-0 right-0 h-px bg-cyan-500/30" />
-                <div className="absolute top-3/4 left-0 right-0 h-px bg-cyan-500/20" />
-              </div>
+              {/* Grid Overlay for camera mode - removido por solicitud del usuario */}
+              {false && (
+                <div className="absolute inset-0 pointer-events-none z-0">
+                  <div className="absolute left-1/4 top-0 bottom-0 w-px bg-cyan-500/15" />
+                  <div className="absolute left-1/2 top-0 bottom-0 w-px bg-cyan-500/20" />
+                  <div className="absolute left-3/4 top-0 bottom-0 w-px bg-cyan-500/15" />
+                  <div className="absolute top-1/4 left-0 right-0 h-px bg-cyan-500/15" />
+                  <div className="absolute top-1/2 left-0 right-0 h-px bg-cyan-500/20" />
+                  <div className="absolute top-3/4 left-0 right-0 h-px bg-cyan-500/15" />
+                </div>
+              )}
 
               {/* Scan Line when running */}
               {isRunning && (
@@ -496,7 +384,7 @@ export function InspectionView({
               )}
 
               {/* Corner Info */}
-              <div className="absolute top-4 left-4 flex items-center gap-2">
+              <div className="absolute top-4 left-4 flex items-center gap-2 z-10">
                 <Badge className="bg-black/70 text-white border-0 font-mono text-xs">{activeCamera}</Badge>
                 {isRunning && (
                   <Badge className="bg-red-600 text-white border-0 text-xs animate-pulse">
@@ -506,7 +394,7 @@ export function InspectionView({
                 )}
               </div>
 
-              <div className="absolute bottom-4 right-4">
+              <div className="absolute bottom-4 right-4 z-10">
                 <Badge className="bg-black/70 text-white border-0 font-mono text-xs">
                   {mounted ? currentTime.toLocaleTimeString("es-ES") : "--:--:--"}
                 </Badge>

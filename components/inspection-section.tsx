@@ -1,9 +1,11 @@
 "use client"
 
+import { useState, useCallback } from "react"
 import { InspectionView, type AnalysisResult } from "@/components/inspection-view"
 import { CameraSelector } from "@/components/camera-selector"
 import { MetricsPanel } from "@/components/metrics-panel"
 import { EventLog } from "@/components/event-log"
+import { ScrollArea } from "@/components/ui/scroll-area"
 import type { Defect } from "@/app/page"
 
 interface InspectionSectionProps {
@@ -37,11 +39,31 @@ export function InspectionSection({
   clearDefects,
   onAIAnalysis,
 }: InspectionSectionProps) {
+  const [lastAnalysisResult, setLastAnalysisResult] = useState<AnalysisResult | null>(null)
+  const [inspectionKey, setInspectionKey] = useState(0)
+
+  const handleAnalysisComplete = useCallback((result: AnalysisResult) => {
+    setLastAnalysisResult(result)
+    onAIAnalysis?.(result)
+  }, [onAIAnalysis])
+
+  const handleNewInspection = useCallback(() => {
+    setLastAnalysisResult(null)
+    setInspectionKey(prev => prev + 1)
+  }, [])
+
+  const handleReAnalyze = useCallback(() => {
+    // Forzar re-renderizado del InspectionView para re-analizar
+    setInspectionKey(prev => prev + 1)
+  }, [])
+
   return (
-    <div className="h-full flex p-4 gap-4">
+    <div className="h-full flex p-4 gap-4 overflow-hidden">
       {/* Left Panel - Camera Selector & AI Info */}
-      <aside className="w-64 flex flex-col gap-4 flex-shrink-0">
-        <CameraSelector activeCamera={activeCamera} setActiveCamera={setActiveCamera} />
+      <div className="w-64 shrink-0 flex flex-col min-h-0 h-full overflow-hidden">
+        <ScrollArea className="h-full">
+          <div className="flex flex-col gap-3 pr-2">
+          <CameraSelector activeCamera={activeCamera} setActiveCamera={setActiveCamera} />
 
         {/* AI Model Info */}
         <div className="bg-card rounded-xl border border-border p-4 shadow-sm">
@@ -93,17 +115,20 @@ export function InspectionSection({
             </div>
           </div>
         </div>
-      </aside>
+          </div>
+        </ScrollArea>
+      </div>
 
       {/* Center - Main View */}
       <div className="flex-1 flex flex-col gap-4 min-w-0">
         <InspectionView
+          key={inspectionKey}
           isRunning={isRunning}
           isAnalyzing={isAnalyzing}
           currentConfidence={currentConfidence}
           currentTime={currentTime}
           activeCamera={activeCamera}
-          onAnalysisComplete={onAIAnalysis}
+          onAnalysisComplete={handleAnalysisComplete}
         />
         <MetricsPanel
           speed={speed}
@@ -114,8 +139,14 @@ export function InspectionSection({
       </div>
 
       {/* Right Panel - Event Log */}
-      <aside className="w-80 flex-shrink-0">
-        <EventLog defects={defects} clearDefects={clearDefects} />
+      <aside className="w-80 shrink-0">
+        <EventLog 
+          defects={defects} 
+          clearDefects={clearDefects} 
+          analysisResult={lastAnalysisResult}
+          onNewInspection={handleNewInspection}
+          onReAnalyze={handleReAnalyze}
+        />
       </aside>
     </div>
   )

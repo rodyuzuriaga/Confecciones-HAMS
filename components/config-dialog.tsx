@@ -8,6 +8,7 @@ import { Slider } from "@/components/ui/slider"
 import { Switch } from "@/components/ui/switch"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
+import { ScrollArea } from "@/components/ui/scroll-area"
 import { Separator } from "@/components/ui/separator"
 import { toast } from "sonner"
 import type { SystemConfig } from "@/app/page"
@@ -29,14 +30,16 @@ export function ConfigDialog({ open, onOpenChange, config, setConfig }: ConfigDi
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-card border border-border text-foreground max-w-lg">
-        <DialogHeader>
+      <DialogContent className="bg-card border border-border text-foreground max-w-lg h-[85vh] p-0 flex flex-col overflow-hidden">
+        <DialogHeader className="shrink-0 p-6 pb-4">
           <DialogTitle className="text-lg font-bold">Configuración del Sistema</DialogTitle>
           <DialogDescription className="text-muted-foreground">
             Ajusta los parámetros de inspección y notificaciones
           </DialogDescription>
         </DialogHeader>
 
+        <ScrollArea className="flex-1 min-h-0">
+          <div className="px-6">
         <div className="space-y-6 py-4">
           {/* Theme Configuration */}
           <div className="space-y-4">
@@ -198,9 +201,11 @@ export function ConfigDialog({ open, onOpenChange, config, setConfig }: ConfigDi
             </div>
           </div>
         </div>
+          </div>
+        </ScrollArea>
 
         {/* Actions */}
-        <div className="flex gap-3 pt-4">
+        <div className="flex gap-3 p-6 pt-4 shrink-0 border-t">
           <Button onClick={handleSave} className="flex-1">
             <Save className="w-4 h-4 mr-2" />
             Guardar Configuración

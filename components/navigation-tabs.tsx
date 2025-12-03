@@ -1,12 +1,12 @@
 "use client"
 
-import { Eye, BarChart3, History, Settings, Play, Square } from "lucide-react"
+import { Eye, BarChart3, History, Settings, Play, Square, Users, FileText } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 
 interface NavigationTabsProps {
-  activeSection: "inspeccion" | "estadisticas" | "historico" | "capture-history"
-  setActiveSection: (section: "inspeccion" | "estadisticas" | "historico" | "capture-history") => void
+  activeSection: "inspeccion" | "estadisticas" | "historico" | "capture-history" | "usuarios" | "reporteria"
+  setActiveSection: (section: "inspeccion" | "estadisticas" | "historico" | "capture-history" | "usuarios" | "reporteria") => void
   isRunning: boolean
   setIsRunning: (value: boolean) => void
   setShowConfig: (value: boolean) => void
@@ -17,6 +17,8 @@ const tabs = [
   { id: "estadisticas" as const, label: "Estadísticas", icon: BarChart3 },
   { id: "historico" as const, label: "Tendencias", icon: BarChart3 },
   { id: "capture-history" as const, label: "Historial de Capturas", icon: History },
+  { id: "usuarios" as const, label: "Gestión de Usuarios", icon: Users },
+  { id: "reporteria" as const, label: "Reportería", icon: FileText },
 ]
 
 export function NavigationTabs({

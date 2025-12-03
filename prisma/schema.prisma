@@ -79,6 +79,7 @@ model Usuario {
   rol              Rol      @relation(fields: [idRol], references: [idRol])
   permiso          Permiso  @relation(fields: [idPermiso], references: [idPermiso])
   datosPersonales  DatosPersonales?
+  inspecciones     Inspeccion[]
 }
 
 model DatosPersonales {
@@ -124,4 +125,70 @@ model Direccion {
   referencia      String?
   datosPersonales DatosPersonales @relation(fields: [idDatosPersonales], references: [idDatosPersonales])
   distrito        Distrito @relation(fields: [idDistrito], references: [idDistrito])
+}
+
+// ==========================================
+// SISTEMA DE CONTROL DE CALIDAD
+// ==========================================
+
+model Producto {
+  idProducto              Int      @id @default(autoincrement())
+  nombre                  String
+  descripcion             String?
+  especificacionesCalidad String?  @db.Text
+  activo                  Boolean  @default(true)
+  createdAt               DateTime @default(now())
+  updatedAt               DateTime @updatedAt
+  inspecciones            Inspeccion[]
+}
+
+model LoteProduccion {
+  idLote          Int      @id @default(autoincrement())
+  numeroLote      String   @unique
+  fechaCreacion   DateTime @default(now())
+  cantidadTotal   Int      @default(0)
+  cantidadInspeccionada Int @default(0)
+  cantidadAprobada Int     @default(0)
+  cantidadRechazada Int    @default(0)
+  estado          String   @default("en_proceso")
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  inspecciones    Inspeccion[]
+}
+
+model Inspeccion {
+  idInspeccion          Int      @id @default(autoincrement())
+  idLote                Int?
+  idProducto            Int?
+  idUsuario             Int?
+  fechaInspeccion       DateTime @default(now())
+  imagenBase64          String?  @db.Text
+  imagenUrl             String?
+  resultado             String
+  recomendacion         String?
+  puntuacionCalidad     Int?
+  resumenAnalisis       String?  @db.Text
+  notasIA               String?  @db.Text
+  respuestaCompletaIA   String?  @db.Text
+  tiempoAnalisisMs      Int?
+  createdAt             DateTime @default(now())
+  
+  lote                  LoteProduccion? @relation(fields: [idLote], references: [idLote])
+  producto              Producto? @relation(fields: [idProducto], references: [idProducto])
+  usuario               Usuario? @relation(fields: [idUsuario], references: [idUsuario])
+  defectos              Defecto[]
+}
+
+model Defecto {
+  idDefecto       Int      @id @default(autoincrement())
+  idInspeccion    Int
+  tipo            String
+  severidad       String
+  ubicacion       String?
+  confianza       Int?
+  descripcion     String?  @db.Text
+  recomendacion   String?
+  createdAt       DateTime @default(now())
+  
+  inspeccion      Inspeccion @relation(fields: [idInspeccion], references: [idInspeccion], onDelete: Cascade)
 }

@@ -7,6 +7,9 @@ import { InspectionSection } from "@/components/inspection-section"
 import { StatsSection } from "@/components/stats-section"
 import { HistoricalSection } from "@/components/historical-section"
 import { ConfigDialog } from "@/components/config-dialog"
+import { LoginForm } from "@/components/login-form"
+import { UserManagement } from "@/components/user-management"
+import { ReportSection } from "@/components/report-section"
 import { Toaster, toast } from "sonner"
 import type { AnalysisResult } from "@/components/inspection-view"
 
@@ -36,7 +39,9 @@ const DEFECT_TYPES = ["Costura irregular", "Mancha", "Botón defectuoso", "Decol
 import { CaptureHistory } from "@/components/capture-history"
 
 export default function Home() {
-  const [activeSection, setActiveSection] = useState<"inspeccion" | "estadisticas" | "historico" | "capture-history">("inspeccion")
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const [currentUser, setCurrentUser] = useState<string | null>(null)
+  const [activeSection, setActiveSection] = useState<"inspeccion" | "estadisticas" | "historico" | "capture-history" | "usuarios" | "reporteria">("inspeccion")
   const [isRunning, setIsRunning] = useState(false)
   const [showConfig, setShowConfig] = useState(false)
   const [totalInspected, setTotalInspected] = useState(1247)
@@ -138,6 +143,33 @@ export default function Home() {
     }
   }, [])
 
+  const handleLogin = useCallback((username: string) => {
+    setIsAuthenticated(true)
+    setCurrentUser(username)
+    toast.success("Bienvenido", {
+      description: `Has iniciado sesión como ${username}`,
+    })
+  }, [])
+
+  const handleLogout = useCallback(() => {
+    setIsAuthenticated(false)
+    setCurrentUser(null)
+    setActiveSection("inspeccion")
+    toast.info("Sesión cerrada", {
+      description: "Has cerrado sesión correctamente",
+    })
+  }, [])
+
+  // Si no está autenticado, mostrar login
+  if (!isAuthenticated) {
+    return (
+      <div className="h-screen flex flex-col bg-background">
+        <Toaster position="top-right" theme="system" />
+        <LoginForm onLogin={handleLogin} />
+      </div>
+    )
+  }
+
   return (
     <div className="h-screen flex flex-col bg-background overflow-hidden">
       <Toaster position="top-right" theme="system" />
@@ -189,6 +221,10 @@ export default function Home() {
         {activeSection === "historico" && <HistoricalSection />}
 
         {activeSection === "capture-history" && <CaptureHistory history={history} />}
+
+        {activeSection === "usuarios" && <UserManagement />}
+
+        {activeSection === "reporteria" && <ReportSection />}
       </main>
 
       <ConfigDialog open={showConfig} onOpenChange={setShowConfig} config={config} setConfig={setConfig} />
